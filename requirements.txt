@@ -1,0 +1,3 @@
+# Data generation and SQLite use only the Python standard library.
+# Power BI Desktop is required to build the interactive dashboard.
+

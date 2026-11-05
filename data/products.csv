@@ -1,0 +1,21 @@
+﻿product_id,product_name,category,subcategory,unit_cost,list_price
+P001,Wireless Earbuds,Electronics,Audio,260000,499000
+P002,Smart Watch,Electronics,Wearables,540000,899000
+P003,Mechanical Keyboard,Electronics,Computer Accessories,420000,749000
+P004,Portable Speaker,Electronics,Audio,320000,599000
+P005,Desk Lamp,Home,Lighting,115000,229000
+P006,Storage Organizer,Home,Storage,80000,169000
+P007,Coffee Grinder,Home,Kitchen,275000,499000
+P008,Vacuum Flask,Home,Kitchen,95000,199000
+P009,Running Shoes,Fashion,Footwear,380000,699000
+P010,Casual Backpack,Fashion,Bags,210000,399000
+P011,Basic T-Shirt,Fashion,Apparel,72000,149000
+P012,Light Jacket,Fashion,Apparel,230000,459000
+P013,Yoga Mat,Sports,Fitness,125000,249000
+P014,Resistance Bands,Sports,Fitness,65000,139000
+P015,Badminton Racket,Sports,Racket Sports,290000,549000
+P016,Insulated Bottle,Sports,Outdoor,105000,219000
+P017,Facial Cleanser,Beauty,Skincare,58000,119000
+P018,Sunscreen SPF 50,Beauty,Skincare,72000,149000
+P019,Hair Dryer,Beauty,Personal Care,240000,449000
+P020,Grooming Kit,Beauty,Personal Care,195000,379000

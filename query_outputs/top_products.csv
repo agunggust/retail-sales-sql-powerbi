@@ -1,0 +1,11 @@
+﻿product_name,category,"ROUND(SUM(s.revenue),0)","ROUND(SUM(s.profit),0)",SUM(s.quantity)
+Smart Watch,Electronics,108149700.0,39569700.0,127
+Portable Speaker,Electronics,93653650.0,41173650.0,164
+Running Shoes,Fashion,88563300.0,38023300.0,133
+Mechanical Keyboard,Electronics,86884000.0,35224000.0,123
+Badminton Racket,Sports,65632950.0,28802950.0,127
+Wireless Earbuds,Electronics,63173400.0,28333400.0,134
+Coffee Grinder,Home,59006750.0,24356750.0,126
+Light Jacket,Fashion,53427600.0,25137600.0,123
+Casual Backpack,Fashion,48957300.0,21447300.0,131
+Hair Dryer,Beauty,44181600.0,18981600.0,105

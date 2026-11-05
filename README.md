@@ -1,0 +1,118 @@
+# Retail Sales Analytics - SQL and Power BI
+
+A beginner-friendly portfolio project that analyzes synthetic retail transactions
+with SQLite and prepares a star schema for an interactive Power BI dashboard.
+The data is fictional and reproducible. It does not represent a real company.
+
+## Dashboard preview
+
+![Retail Sales Analytics dashboard](dashboard_reference.png)
+
+## Key results
+
+| KPI | Result |
+|---|---:|
+| Revenue | Rp944,480,400 |
+| Profit | Rp413,325,400 |
+| Profit margin | 43.76% |
+| Orders | 900 |
+| Transaction rows | 1,513 |
+
+The analysis covers monthly trends, category and product performance, sales
+channels, customer segments, and city-level contribution.
+
+## Business questions
+
+- How do revenue and profit change month by month?
+- Which categories and products perform best?
+- Which channels have the highest revenue and average order value?
+- Which customer segments and cities contribute the most revenue?
+- Does revenue growth maintain a healthy profit margin?
+
+## Project structure
+
+```text
+Retail_Sales_Analytics_Source.xlsx   Power BI-ready workbook and dashboard reference
+retail_sales.db                      SQLite database
+data/                                CSV fact and dimension tables
+sql/01_schema.sql                    Star-schema tables and indexes
+sql/02_analysis_queries.sql          KPI, trend, ranking, and segmentation queries
+query_outputs/                       Verified SQL results
+powerbi/DAX_Measures.txt             Measures to copy into Power BI
+powerbi/Dashboard_Build_Guide.md     Step-by-step dashboard instructions
+scripts/generate_data.py             Reproducible synthetic data generator
+PORTFOLIO_DESCRIPTION.md             CV, portfolio, and interview wording
+```
+
+## Data model
+
+```mermaid
+flowchart LR
+    Calendar[Calendar dimension] -->|date to order_date| Sales[Sales fact]
+    Products[Product dimension] -->|product_id| Sales
+    Customers[Customer dimension] -->|customer_id| Sales
+```
+
+## Run the SQL project in PowerShell
+
+Python 3.11 or newer is enough; no packages are required.
+
+```powershell
+python .\scripts\generate_data.py
+python -m sqlite3 .\retail_sales.db
+```
+
+Inside SQLite, try:
+
+```sql
+.headers on
+.mode column
+SELECT COUNT(*) AS sales_rows FROM fact_sales;
+SELECT ROUND(SUM(revenue), 0) AS total_revenue FROM fact_sales;
+.read sql/02_analysis_queries.sql
+.quit
+```
+
+If `python -m sqlite3` is unavailable in your Python version, use a SQLite GUI or
+open `retail_sales.db` from a database extension in VS Code. The generator itself
+always validates the database using Python's built-in SQLite library.
+
+## Build the Power BI dashboard
+
+Follow `powerbi/Dashboard_Build_Guide.md`. Import the `Sales`, `Products`,
+`Customers`, and `Calendar` sheets from `Retail_Sales_Analytics_Source.xlsx`,
+create the relationships, and paste the measures from `DAX_Measures.txt`.
+
+The workbook's `Dashboard` sheet is a visual reference. The Power BI dashboard
+should use slicers and DAX so every chart responds interactively.
+
+## Data quality checks
+
+- Revenue in the database reconciles exactly with the generated source data.
+- All foreign keys match their date, product, and customer dimensions.
+- No negative-profit transaction rows are present.
+- The included SQL analysis script runs successfully against SQLite.
+
+## SQL concepts demonstrated
+
+- Relational star schema with primary and foreign keys
+- Joins between fact and dimension tables
+- Aggregation, grouping, and conditional calculations
+- Common table expressions (CTEs)
+- `LAG` for month-over-month analysis
+- `DENSE_RANK` for product ranking
+- Null-safe division with `NULLIF`
+- Indexes and validation checks
+
+## Suggested next improvement
+
+After completing the first dashboard, add a tooltip page and a drill-through page
+for product details. Save the `.pbix` file in this folder and add screenshots to the
+GitHub README before linking the project from your CV.
+
+## Author
+
+Muh Agung Gustiansyah  
+[LinkedIn](https://www.linkedin.com/in/muh-agung-gustiansyah-ba879b297/) ·
+[GitHub](https://github.com/agunggust)
+

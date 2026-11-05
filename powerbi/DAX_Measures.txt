@@ -1,0 +1,28 @@
+-- Create these measures in the Sales table.
+
+Total Revenue = SUM(Sales[revenue])
+
+Total Profit = SUM(Sales[profit])
+
+Profit Margin = DIVIDE([Total Profit], [Total Revenue])
+
+Total Orders = DISTINCTCOUNT(Sales[order_id])
+
+Average Order Value = DIVIDE([Total Revenue], [Total Orders])
+
+Active Customers = DISTINCTCOUNT(Sales[customer_id])
+
+Units Sold = SUM(Sales[quantity])
+
+Previous Month Revenue =
+CALCULATE(
+    [Total Revenue],
+    DATEADD('Calendar'[date], -1, MONTH)
+)
+
+Revenue MoM % =
+DIVIDE(
+    [Total Revenue] - [Previous Month Revenue],
+    [Previous Month Revenue]
+)
+

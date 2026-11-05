@@ -1,0 +1,2 @@
+﻿"ROUND(SUM(revenue),0)","ROUND(SUM(profit),0)","ROUND(100.0*SUM(profit)/SUM(revenue),2)",COUNT(DISTINCT order_id),"ROUND(SUM(revenue)/COUNT(DISTINCT order_id),0)",COUNT(DISTINCT customer_id)
+944480400.0,413325400.0,43.76,900,1049423.0,242
