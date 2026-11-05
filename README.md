@@ -8,6 +8,9 @@ The data is fictional and reproducible. It does not represent a real company.
 
 ![Retail Sales Analytics dashboard](dashboard_reference.png)
 
+Download and open the interactive dashboard in Power BI Desktop:
+[Retail_Sales_Performance_Dashboard.pbix](Retail_Sales_Performance_Dashboard.pbix).
+
 ## Key results
 
 | KPI | Result |
@@ -33,6 +36,7 @@ channels, customer segments, and city-level contribution.
 
 ```text
 Retail_Sales_Analytics_Source.xlsx   Power BI-ready workbook and dashboard reference
+Retail_Sales_Performance_Dashboard.pbix  Interactive Power BI dashboard
 retail_sales.db                      SQLite database
 data/                                CSV fact and dimension tables
 sql/01_schema.sql                    Star-schema tables and indexes
@@ -77,9 +81,14 @@ If `python -m sqlite3` is unavailable in your Python version, use a SQLite GUI o
 open `retail_sales.db` from a database extension in VS Code. The generator itself
 always validates the database using Python's built-in SQLite library.
 
-## Build the Power BI dashboard
+## Open or rebuild the Power BI dashboard
 
-Follow `powerbi/Dashboard_Build_Guide.md`. Import the `Sales`, `Products`,
+Open `Retail_Sales_Performance_Dashboard.pbix` with the free Power BI Desktop
+application to explore the interactive report. The included dashboard contains
+revenue, profit, and units-sold KPI cards, a monthly revenue trend, and revenue
+comparison by sales channel.
+
+To rebuild it from scratch, follow `powerbi/Dashboard_Build_Guide.md`. Import the `Sales`, `Products`,
 `Customers`, and `Calendar` sheets from `Retail_Sales_Analytics_Source.xlsx`,
 create the relationships, and paste the measures from `DAX_Measures.txt`.
 
@@ -106,9 +115,9 @@ should use slicers and DAX so every chart responds interactively.
 
 ## Suggested next improvement
 
-After completing the first dashboard, add a tooltip page and a drill-through page
-for product details. Save the `.pbix` file in this folder and add screenshots to the
-GitHub README before linking the project from your CV.
+Add a tooltip page and a drill-through page for product details, then publish a
+browser-viewable version through Power BI Service when an appropriate account is
+available.
 
 ## Author
 
