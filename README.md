@@ -24,6 +24,22 @@ Download and open the interactive dashboard in Power BI Desktop:
 The analysis covers monthly trends, category and product performance, sales
 channels, customer segments, and city-level contribution.
 
+### Business insights from the synthetic data
+
+- **Electronics leads in revenue, with a lower margin.** It generated
+  Rp351.9 million, or 37.3% of total revenue. Its 41.01% margin was 2.75
+  percentage points below the overall margin, making it a starting point for
+  examining product costs and discounts.
+- **Marketplace leads on both revenue and average order value.** It generated
+  Rp418.2 million across 389 orders. At Rp1.075 million per order, its average
+  order value was higher than Website (Rp1.039 million) and Retail Store
+  (Rp1.013 million).
+- **December had the highest revenue, with a margin below the annual figure.**
+  Revenue reached Rp116.4 million, up 5.88% from November. December margin was
+  42.48% versus 43.76% for the year. The generator gives November and December
+  more orders on average and allows deeper discounts, so the pattern reflects
+  a simulated seasonal scenario.
+
 ## Business questions
 
 - How do revenue and profit change month by month?
