@@ -8,6 +8,15 @@ The data is fictional and reproducible. It does not represent a real company.
 
 ![Retail Sales Analytics dashboard](dashboard_reference.png)
 
+### Monthly Revenue with January and March selected
+
+![Power BI Monthly Revenue table and month slicer showing January and March selected. March growth is 23.45%, and January and the total are blank.](dashboard_monthly_revenue.png)
+
+March revenue grew **23.45%** compared with February, which remains the
+comparison month even though it is outside the slicer selection. January has
+no prior month in the dataset, and the total spans two months, so both MoM
+values are blank.
+
 Download and open the interactive dashboard in Power BI Desktop:
 [Retail_Sales_Performance_Dashboard.pbix](Retail_Sales_Performance_Dashboard.pbix).
 
