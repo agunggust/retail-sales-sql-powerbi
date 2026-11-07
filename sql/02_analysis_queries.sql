@@ -1,3 +1,4 @@
+-- query: kpi_summary
 -- 1. Executive KPI summary
 SELECT
     ROUND(SUM(revenue), 0) AS total_revenue,
@@ -8,6 +9,7 @@ SELECT
     COUNT(DISTINCT customer_id) AS active_customers
 FROM fact_sales;
 
+-- query: monthly_performance
 -- 2. Monthly trend with month-over-month growth
 WITH monthly AS (
     SELECT
@@ -34,6 +36,7 @@ SELECT
 FROM with_previous
 ORDER BY year_month;
 
+-- query: category_performance
 -- 3. Category performance
 SELECT
     p.category,
@@ -46,6 +49,7 @@ JOIN dim_product p ON p.product_id = s.product_id
 GROUP BY p.category
 ORDER BY revenue DESC;
 
+-- query: top_products
 -- 4. Top 10 products by revenue
 SELECT
     p.product_name,
@@ -57,9 +61,10 @@ SELECT
 FROM fact_sales s
 JOIN dim_product p ON p.product_id = s.product_id
 GROUP BY p.product_id, p.product_name, p.category
-ORDER BY revenue DESC
+ORDER BY revenue_rank, p.product_id
 LIMIT 10;
 
+-- query: channel_performance
 -- 5. Sales channel performance
 SELECT
     channel,
@@ -71,6 +76,7 @@ FROM fact_sales
 GROUP BY channel
 ORDER BY revenue DESC;
 
+-- query: segment_performance
 -- 6. Customer segment performance
 SELECT
     c.customer_segment,
@@ -83,6 +89,7 @@ JOIN dim_customer c ON c.customer_id = s.customer_id
 GROUP BY c.customer_segment
 ORDER BY revenue DESC;
 
+-- query: city_performance
 -- 7. City performance
 SELECT
     c.city,

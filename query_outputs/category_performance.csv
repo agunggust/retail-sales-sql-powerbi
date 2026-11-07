@@ -1,4 +1,4 @@
-﻿category,"ROUND(SUM(s.revenue),0)","ROUND(SUM(s.profit),0)","ROUND(100.0*SUM(s.profit)/SUM(s.revenue),2)",SUM(s.quantity)
+﻿category,revenue,profit,profit_margin_pct,units_sold
 Electronics,351860750.0,144300750.0,41.01,548
 Fashion,207829900.0,92993900.0,44.75,505
 Sports,146470000.0,67935000.0,46.38,548

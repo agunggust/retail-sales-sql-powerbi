@@ -3,6 +3,8 @@ import unittest
 from contextlib import closing
 from pathlib import Path
 
+from scripts.generate_data import read_analysis_queries
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -28,8 +30,7 @@ class MonthlyPerformanceTests(unittest.TestCase):
                 [("S1", "O1", "2025-01-01"), ("S2", "O2", "2025-03-01")],
             )
 
-            sql = (ROOT / "sql" / "02_analysis_queries.sql").read_text(encoding="utf-8")
-            monthly_query = sql.split(";")[1]
+            monthly_query = read_analysis_queries()["monthly_performance"]
             rows = connection.execute(monthly_query).fetchall()
 
         self.assertEqual(rows, [

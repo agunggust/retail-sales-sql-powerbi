@@ -95,6 +95,9 @@ create the relationships, and paste the measures from `DAX_Measures.txt`.
 The workbook's `Dashboard` sheet is a visual reference. The Power BI dashboard
 should use slicers and DAX so every chart responds interactively.
 
+The generator uses the SQL in `sql/02_analysis_queries.sql` to export the KPI,
+monthly, category, channel, and top-product CSV files in `query_outputs/`.
+
 ## Data quality checks
 
 - The generator checks the SQLite sales row count and total revenue against the

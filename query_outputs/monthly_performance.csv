@@ -1,4 +1,4 @@
-﻿year_month,"ROUND(revenue,0)","ROUND(profit,0)",orders,"ROUND(100.0*profit/revenue,2)","ROUND(100.0*(revenue-previous_revenue)/previous_revenue,2)"
+﻿year_month,revenue,profit,orders,profit_margin_pct,revenue_mom_pct
 2025-01,61336800.0,26760800.0,52,43.63,
 2025-02,54591550.0,24185550.0,57,44.3,-11.0
 2025-03,67394450.0,29962450.0,62,44.46,23.45

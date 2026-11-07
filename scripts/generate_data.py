@@ -16,6 +16,7 @@ DATA_DIR = ROOT / "data"
 QUERY_DIR = ROOT / "query_outputs"
 DB_PATH = ROOT / "retail_sales.db"
 SCHEMA_PATH = ROOT / "sql" / "01_schema.sql"
+ANALYSIS_PATH = ROOT / "sql" / "02_analysis_queries.sql"
 SUMMARY_PATH = ROOT / "project_summary.json"
 SEED = 20261105
 
@@ -197,58 +198,28 @@ def query_to_csv(connection: sqlite3.Connection, filename: str, query: str) -> l
     return rows
 
 
+def read_analysis_queries() -> dict[str, str]:
+    sections = ANALYSIS_PATH.read_text(encoding="utf-8").split("-- query: ")
+    queries = {}
+    for section in sections[1:]:
+        name, _, query = section.partition("\n")
+        queries[name] = query
+    return queries
+
+
 def create_query_outputs() -> dict:
-    QUERY_DIR.mkdir(parents=True, exist_ok=True)
+    queries = read_analysis_queries()
     connection = sqlite3.connect(DB_PATH)
     try:
-        kpi = query_to_csv(connection, "kpi_summary.csv", """
-            SELECT ROUND(SUM(revenue),0), ROUND(SUM(profit),0),
-                   ROUND(100.0*SUM(profit)/SUM(revenue),2), COUNT(DISTINCT order_id),
-                   ROUND(SUM(revenue)/COUNT(DISTINCT order_id),0), COUNT(DISTINCT customer_id)
-            FROM fact_sales
-        """)[0]
-        monthly = query_to_csv(connection, "monthly_performance.csv", """
-            WITH m AS (
-              SELECT d.year_month, COALESCE(SUM(s.revenue), 0) revenue,
-                     COALESCE(SUM(s.profit), 0) profit,
-                     COUNT(DISTINCT s.order_id) orders
-              FROM dim_date d LEFT JOIN fact_sales s ON s.order_date=d.date GROUP BY d.year_month
-            ), p AS (
-              SELECT *, LAG(revenue) OVER (ORDER BY year_month) previous_revenue FROM m
-            )
-            SELECT year_month, ROUND(revenue,0), ROUND(profit,0), orders,
-                   ROUND(100.0*profit/revenue,2),
-                   ROUND(100.0*(revenue-previous_revenue)/previous_revenue,2)
-            FROM p ORDER BY year_month
-        """)
-        category = query_to_csv(connection, "category_performance.csv", """
-            SELECT p.category, ROUND(SUM(s.revenue),0), ROUND(SUM(s.profit),0),
-                   ROUND(100.0*SUM(s.profit)/SUM(s.revenue),2), SUM(s.quantity)
-            FROM fact_sales s JOIN dim_product p ON p.product_id=s.product_id
-            GROUP BY p.category ORDER BY SUM(s.revenue) DESC
-        """)
-        channel = query_to_csv(connection, "channel_performance.csv", """
-            SELECT channel, ROUND(SUM(revenue),0), ROUND(SUM(profit),0),
-                   COUNT(DISTINCT order_id), ROUND(SUM(revenue)/COUNT(DISTINCT order_id),0)
-            FROM fact_sales GROUP BY channel ORDER BY SUM(revenue) DESC
-        """)
-        top_products = query_to_csv(connection, "top_products.csv", """
-            SELECT p.product_name, p.category, ROUND(SUM(s.revenue),0),
-                   ROUND(SUM(s.profit),0), SUM(s.quantity)
-            FROM fact_sales s JOIN dim_product p ON p.product_id=s.product_id
-            GROUP BY p.product_id ORDER BY SUM(s.revenue) DESC LIMIT 10
-        """)
-
+        return {
+            "kpi": query_to_csv(connection, "kpi_summary.csv", queries["kpi_summary"])[0],
+            "monthly": query_to_csv(connection, "monthly_performance.csv", queries["monthly_performance"]),
+            "category": query_to_csv(connection, "category_performance.csv", queries["category_performance"]),
+            "channel": query_to_csv(connection, "channel_performance.csv", queries["channel_performance"]),
+            "top_products": query_to_csv(connection, "top_products.csv", queries["top_products"]),
+        }
     finally:
         connection.close()
-
-    return {
-        "kpi": kpi,
-        "monthly": monthly,
-        "category": category,
-        "channel": channel,
-        "top_products": top_products,
-    }
 
 
 def main() -> None:
