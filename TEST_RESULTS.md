@@ -15,7 +15,7 @@ Generated with deterministic seed `20261105`.
 - Orphan product keys: 0
 - Orphan customer keys: 0
 - Negative-profit rows: 0
-- Category-to-total revenue difference: Rp0
+- Source-to-database revenue difference: Rp0
 - Workbook formula-error scan: 0 matches
 
 The workbook was rendered and visually checked for the dashboard, source tables,

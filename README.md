@@ -97,7 +97,8 @@ should use slicers and DAX so every chart responds interactively.
 
 ## Data quality checks
 
-- Revenue in the database reconciles exactly with the generated source data.
+- The generator checks the SQLite sales row count and total revenue against the
+  generated source rows before replacing the database. A mismatch stops the run.
 - All foreign keys match their date, product, and customer dimensions.
 - No negative-profit transaction rows are present.
 - The included SQL analysis script runs successfully against SQLite.

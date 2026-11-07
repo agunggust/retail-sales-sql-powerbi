@@ -8,6 +8,7 @@ import random
 import sqlite3
 from datetime import date, timedelta
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -129,21 +130,64 @@ def build_data() -> dict[str, list[tuple]]:
     return {"calendar": calendar, "products": products, "customers": customers, "sales": sales}
 
 
-def create_database(data: dict[str, list[tuple]]) -> None:
-    temp_db = DB_PATH.with_suffix(".tmp")
-    if temp_db.exists():
-        temp_db.unlink()
-    connection = sqlite3.connect(temp_db)
-    try:
-        connection.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
-        connection.executemany("INSERT INTO dim_date VALUES (?,?,?,?,?,?,?,?)", data["calendar"])
-        connection.executemany("INSERT INTO dim_product VALUES (?,?,?,?,?,?)", data["products"])
-        connection.executemany("INSERT INTO dim_customer VALUES (?,?,?,?)", data["customers"])
-        connection.executemany("INSERT INTO fact_sales VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", data["sales"])
-        connection.commit()
-    finally:
-        connection.close()
-    temp_db.replace(DB_PATH)
+def validate_database(connection: sqlite3.Connection, sales: list[tuple]) -> dict:
+    fact_rows, orders, database_revenue = connection.execute(
+        "SELECT COUNT(*), COUNT(DISTINCT order_id), COALESCE(SUM(revenue), 0) FROM fact_sales"
+    ).fetchone()
+    source_revenue = round(sum(row[9] for row in sales), 2)
+    checks = {
+        "fact_rows": fact_rows,
+        "orders": orders,
+        "orphan_dates": connection.execute(
+            "SELECT COUNT(*) FROM fact_sales s LEFT JOIN dim_date d "
+            "ON d.date = s.order_date WHERE d.date IS NULL"
+        ).fetchone()[0],
+        "orphan_products": connection.execute(
+            "SELECT COUNT(*) FROM fact_sales s LEFT JOIN dim_product p "
+            "ON p.product_id = s.product_id WHERE p.product_id IS NULL"
+        ).fetchone()[0],
+        "orphan_customers": connection.execute(
+            "SELECT COUNT(*) FROM fact_sales s LEFT JOIN dim_customer c "
+            "ON c.customer_id = s.customer_id WHERE c.customer_id IS NULL"
+        ).fetchone()[0],
+        "negative_profit_rows": connection.execute(
+            "SELECT COUNT(*) FROM fact_sales WHERE profit < 0"
+        ).fetchone()[0],
+        "revenue_reconciliation": round(database_revenue - source_revenue, 2),
+    }
+
+    errors = []
+    if fact_rows != len(sales):
+        errors.append(f"fact rows: source {len(sales)}, database {fact_rows}")
+    if checks["revenue_reconciliation"]:
+        errors.append(
+            f"revenue: source {source_revenue:.2f}, database {database_revenue:.2f}, "
+            f"difference {checks['revenue_reconciliation']:+.2f}"
+        )
+    for name in ("orphan_dates", "orphan_products", "orphan_customers", "negative_profit_rows"):
+        if checks[name]:
+            errors.append(f"{name}: {checks[name]}")
+    if errors:
+        raise ValueError("Database validation failed: " + ", ".join(errors))
+    return checks
+
+
+def create_database(data: dict[str, list[tuple]]) -> dict:
+    with TemporaryDirectory(dir=DB_PATH.parent) as temp_dir:
+        temp_db = Path(temp_dir) / DB_PATH.name
+        connection = sqlite3.connect(temp_db)
+        try:
+            connection.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
+            connection.executemany("INSERT INTO dim_date VALUES (?,?,?,?,?,?,?,?)", data["calendar"])
+            connection.executemany("INSERT INTO dim_product VALUES (?,?,?,?,?,?)", data["products"])
+            connection.executemany("INSERT INTO dim_customer VALUES (?,?,?,?)", data["customers"])
+            connection.executemany("INSERT INTO fact_sales VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", data["sales"])
+            checks = validate_database(connection, data["sales"])
+            connection.commit()
+        finally:
+            connection.close()
+        temp_db.replace(DB_PATH)
+    return checks
 
 
 def query_to_csv(connection: sqlite3.Connection, filename: str, query: str) -> list[tuple]:
@@ -195,15 +239,6 @@ def create_query_outputs() -> dict:
             GROUP BY p.product_id ORDER BY SUM(s.revenue) DESC LIMIT 10
         """)
 
-        checks = {
-            "fact_rows": connection.execute("SELECT COUNT(*) FROM fact_sales").fetchone()[0],
-            "orders": connection.execute("SELECT COUNT(DISTINCT order_id) FROM fact_sales").fetchone()[0],
-            "orphan_dates": connection.execute("SELECT COUNT(*) FROM fact_sales s LEFT JOIN dim_date d ON d.date=s.order_date WHERE d.date IS NULL").fetchone()[0],
-            "orphan_products": connection.execute("SELECT COUNT(*) FROM fact_sales s LEFT JOIN dim_product p ON p.product_id=s.product_id WHERE p.product_id IS NULL").fetchone()[0],
-            "orphan_customers": connection.execute("SELECT COUNT(*) FROM fact_sales s LEFT JOIN dim_customer c ON c.customer_id=s.customer_id WHERE c.customer_id IS NULL").fetchone()[0],
-            "negative_profit_rows": connection.execute("SELECT COUNT(*) FROM fact_sales WHERE profit < 0").fetchone()[0],
-            "revenue_reconciliation": round(sum(row[1] for row in category) - kpi[0], 2),
-        }
     finally:
         connection.close()
 
@@ -213,24 +248,24 @@ def create_query_outputs() -> dict:
         "category": category,
         "channel": channel,
         "top_products": top_products,
-        "checks": checks,
     }
 
 
 def main() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     data = build_data()
+    checks = create_database(data)
     write_csv(DATA_DIR / "calendar.csv", ["date", "year", "quarter", "month_number", "month_name", "year_month", "week_number", "day_name"], data["calendar"])
     write_csv(DATA_DIR / "products.csv", ["product_id", "product_name", "category", "subcategory", "unit_cost", "list_price"], data["products"])
     write_csv(DATA_DIR / "customers.csv", ["customer_id", "city", "customer_segment", "join_date"], data["customers"])
     write_csv(DATA_DIR / "sales.csv", ["sale_id", "order_id", "order_date", "customer_id", "product_id", "channel", "quantity", "unit_price", "discount_pct", "revenue", "total_cost", "profit"], data["sales"])
-    create_database(data)
     analysis = create_query_outputs()
     summary = {
         "seed": SEED,
         "synthetic": True,
         "rows": {key: len(value) for key, value in data.items()},
         **analysis,
+        "checks": checks,
     }
     SUMMARY_PATH.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary["checks"], indent=2))
