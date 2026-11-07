@@ -25,6 +25,16 @@ by `Calendar[month_number]`.
 Copy the measures from `DAX_Measures.txt`. Format revenue, profit, and average order
 value as Indonesian Rupiah with zero decimals. Format margins and growth as percentages.
 
+Use `Calendar[year_month]` on the rows of a visual with Revenue MoM %. The
+measure compares full calendar months. A partial month or a total across
+multiple months is blank.
+
+To check the measure in Power BI Desktop, add it to a table by year and month.
+January 2025 should be blank because December 2024 is outside the dataset.
+Select January and March together in a slicer. January should remain blank,
+March should compare with February, and the combined total should be blank.
+Select only part of March and confirm the result is blank.
+
 ## One-page layout
 
 Use a 16:9 page with a white background and a dark-blue title. Add:

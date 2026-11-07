@@ -12,11 +12,11 @@ FROM fact_sales;
 WITH monthly AS (
     SELECT
         d.year_month,
-        SUM(s.revenue) AS revenue,
-        SUM(s.profit) AS profit,
+        COALESCE(SUM(s.revenue), 0) AS revenue,
+        COALESCE(SUM(s.profit), 0) AS profit,
         COUNT(DISTINCT s.order_id) AS orders
-    FROM fact_sales s
-    JOIN dim_date d ON d.date = s.order_date
+    FROM dim_date d
+    LEFT JOIN fact_sales s ON s.order_date = d.date
     GROUP BY d.year_month
 ), with_previous AS (
     SELECT

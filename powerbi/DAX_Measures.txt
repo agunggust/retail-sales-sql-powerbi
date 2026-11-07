@@ -15,14 +15,24 @@ Active Customers = DISTINCTCOUNT(Sales[customer_id])
 Units Sold = SUM(Sales[quantity])
 
 Previous Month Revenue =
-CALCULATE(
-    [Total Revenue],
-    DATEADD('Calendar'[date], -1, MONTH)
-)
+VAR LastVisibleDate = MAX('Calendar'[date])
+VAR IsFullMonth =
+    HASONEVALUE('Calendar'[year_month])
+        && COUNTROWS(VALUES('Calendar'[date])) = DAY(EOMONTH(LastVisibleDate, 0))
+RETURN
+    IF(
+        IsFullMonth,
+        CALCULATE(
+            [Total Revenue],
+            FILTER(
+                ALL('Calendar'),
+                'Calendar'[date] > EOMONTH(LastVisibleDate, -2)
+                    && 'Calendar'[date] <= EOMONTH(LastVisibleDate, -1)
+            )
+        )
+    )
 
 Revenue MoM % =
-DIVIDE(
-    [Total Revenue] - [Previous Month Revenue],
-    [Previous Month Revenue]
-)
-
+VAR PreviousRevenue = [Previous Month Revenue]
+RETURN
+    DIVIDE(COALESCE([Total Revenue], 0) - PreviousRevenue, PreviousRevenue)

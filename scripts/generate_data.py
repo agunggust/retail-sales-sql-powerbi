@@ -165,9 +165,10 @@ def create_query_outputs() -> dict:
         """)[0]
         monthly = query_to_csv(connection, "monthly_performance.csv", """
             WITH m AS (
-              SELECT d.year_month, SUM(s.revenue) revenue, SUM(s.profit) profit,
+              SELECT d.year_month, COALESCE(SUM(s.revenue), 0) revenue,
+                     COALESCE(SUM(s.profit), 0) profit,
                      COUNT(DISTINCT s.order_id) orders
-              FROM fact_sales s JOIN dim_date d ON d.date=s.order_date GROUP BY d.year_month
+              FROM dim_date d LEFT JOIN fact_sales s ON s.order_date=d.date GROUP BY d.year_month
             ), p AS (
               SELECT *, LAG(revenue) OVER (ORDER BY year_month) previous_revenue FROM m
             )
