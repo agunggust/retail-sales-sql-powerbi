@@ -101,8 +101,9 @@ always validates the database using Python's built-in SQLite library.
 
 Open `Retail_Sales_Performance_Dashboard.pbix` with the free Power BI Desktop
 application to explore the interactive report. The included dashboard contains
-revenue, profit, and units-sold KPI cards, a monthly revenue trend, and revenue
-comparison by sales channel.
+revenue, profit, and units-sold KPI cards, a revenue trend, and revenue by sales
+channel. Open **Monthly Revenue** to filter the monthly table and compare revenue
+with the previous calendar month.
 
 To rebuild it from scratch, follow `powerbi/Dashboard_Build_Guide.md`. Import the `Sales`, `Products`,
 `Customers`, and `Calendar` sheets from `Retail_Sales_Analytics_Source.xlsx`,

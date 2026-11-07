@@ -20,3 +20,14 @@ Generated with deterministic seed `20261105`.
 
 The workbook was rendered and visually checked for the dashboard, source tables,
 calendar, and Power BI checklist. The dataset is synthetic.
+
+## Power BI Desktop checks
+
+- The **Monthly Revenue** slicer shows January and March when selected
+  together. January and the combined total have blank MoM values, and March
+  shows 23.45% growth over February.
+- The saved DAX Query View query evaluates the model measures under full-month,
+  noncontiguous, partial-month, and full-year filters. March uses February
+  revenue of Rp54,591,550. January, the combined selection, March 1-15, and the
+  full-year total have blank MoM values.
+- The unfiltered model revenue matches SQLite at Rp944,480,400.

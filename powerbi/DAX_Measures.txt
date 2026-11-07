@@ -1,33 +1,33 @@
--- Create these measures in the Sales table.
+-- Create these measures in SalesTable.
 
-Total Revenue = SUM(Sales[revenue])
+Total Revenue = SUM(SalesTable[revenue])
 
-Total Profit = SUM(Sales[profit])
+Total Profit = SUM(SalesTable[profit])
 
 Profit Margin = DIVIDE([Total Profit], [Total Revenue])
 
-Total Orders = DISTINCTCOUNT(Sales[order_id])
+Total Orders = DISTINCTCOUNT(SalesTable[order_id])
 
 Average Order Value = DIVIDE([Total Revenue], [Total Orders])
 
-Active Customers = DISTINCTCOUNT(Sales[customer_id])
+Active Customers = DISTINCTCOUNT(SalesTable[customer_id])
 
-Units Sold = SUM(Sales[quantity])
+Units Sold = SUM(SalesTable[quantity])
 
 Previous Month Revenue =
-VAR LastVisibleDate = MAX('Calendar'[date])
+VAR LastVisibleDate = MAX('CalendarTable'[date])
 VAR IsFullMonth =
-    HASONEVALUE('Calendar'[year_month])
-        && COUNTROWS(VALUES('Calendar'[date])) = DAY(EOMONTH(LastVisibleDate, 0))
+    HASONEVALUE('CalendarTable'[year_month])
+        && COUNTROWS(VALUES('CalendarTable'[date])) = DAY(EOMONTH(LastVisibleDate, 0))
 RETURN
     IF(
         IsFullMonth,
         CALCULATE(
             [Total Revenue],
             FILTER(
-                ALL('Calendar'),
-                'Calendar'[date] > EOMONTH(LastVisibleDate, -2)
-                    && 'Calendar'[date] <= EOMONTH(LastVisibleDate, -1)
+                ALL('CalendarTable'),
+                'CalendarTable'[date] >= EOMONTH(LastVisibleDate, -2) + 1
+                    && 'CalendarTable'[date] < EOMONTH(LastVisibleDate, -1) + 1
             )
         )
     )
